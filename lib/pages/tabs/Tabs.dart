@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-
+import '../../services/ScreenAdapter.dart';
 import 'Home.dart';
 import 'Category.dart';
 import 'Cart.dart';
 import 'User.dart';
 
 class Tabs extends StatefulWidget {
-  const Tabs({Key? key}) : super(key: key);
+  Tabs({Key? key}) : super(key: key);
 
   @override
   _TabsState createState() => _TabsState();
@@ -18,46 +18,72 @@ class _TabsState extends State<Tabs> {
   @override
   void initState() {
     super.initState();
-    _pageController=PageController(initialPage:_currentIndex );
+    _pageController = PageController(initialPage: _currentIndex);
   }
 
-  // final List _pageList = [HomePage(), CategoryPage(), CartPage(), UserPage()];
-  final List <Widget> _pageList=[
-    HomePage(),
-    CategoryPage(),
-    CartPage(),
-    UserPage()
-  ];
+  final List<Widget> _pageList = [HomePage(), CategoryPage(), CartPage(), UserPage()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("shop"),
-      ),
-      // body: _pageList[_currentIndex], // 依据底部选中tab，对应切换页面
+      appBar: _currentIndex != 3
+          ? AppBar(
+              leading: const IconButton(
+                icon: Icon(Icons.center_focus_weak,
+                    size: 28, color: Colors.black87),
+                onPressed: null,
+              ),
+              title: InkWell(
+                child: Container(
+                  height: ScreenAdapter.height(68),
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(233, 233, 233, 0.8),
+                      borderRadius: BorderRadius.circular(30)),
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      const Icon(Icons.search),
+                      Text("笔记本",
+                          style: TextStyle(fontSize: ScreenAdapter.size(28)))
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, '/search');
+                },
+              ),
+              actions: const <Widget>[
+                IconButton(
+                  icon: Icon(Icons.message, size: 28, color: Colors.black87),
+                  onPressed: null,
+                )
+              ],
+            )
+          : AppBar(
+              title: const Text("用户中心"),
+            ),
       body: PageView(
         controller: _pageController,
         children: _pageList,
-        // onPageChanged: (){
-        // },
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        // physics: NeverScrollableScrollPhysics(),  //禁止pageView滑动，不配置默认可以滑动
       ),
-      // body: IndexedStack( // 第一次加载所有页面，后续只显示其中一个页面
-      //   index: _currentIndex,
-      //   children: _pageList,
-      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() { // 更新当前索引值
+          setState(() {
             _currentIndex = index;
-
             //跳转页面
             _pageController.jumpToPage(index);
           });
         },
-        type: BottomNavigationBarType.fixed, // 2个以上的菜单，必须配置此属性
-        fixedColor: Colors.red, // 选中的颜色
+        type: BottomNavigationBarType.fixed,
+        fixedColor: Colors.red,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
           BottomNavigationBarItem(icon: Icon(Icons.category), label: "分类"),
