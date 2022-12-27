@@ -3,6 +3,7 @@ import '../pages/tabs/Tabs.dart';
 
 import '../pages/Search.dart';
 import '../pages/ProductList.dart';
+import '../pages/ProductContent.dart';
 
 //配置路由
 final Map<String,Function> routes = {
@@ -10,6 +11,7 @@ final Map<String,Function> routes = {
   '/search': (context) => SearchPage(),
   // 有路由传值
   '/productList': (context,{arguments}) => ProductListPage(arguments:arguments), // 商品列表子页面
+  '/productContent': (context,{arguments}) => ProductContentPage(arguments:arguments),
 };
 
 //固定写法

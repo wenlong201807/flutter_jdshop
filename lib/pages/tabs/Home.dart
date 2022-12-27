@@ -13,14 +13,15 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   List _focusData = [];
   List _hotProductList = [];
   List _bestProductList = [];
 
   @override
   // implement wantKeepAlive  缓存当前页面
-  bool get wantKeepAlive =>true;
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -117,6 +118,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     );
   }
 
+  //热门商品
   Widget _hotProductListWidget() {
     if (_hotProductList.isNotEmpty) {
       return Container(
@@ -129,23 +131,29 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             String sPic = _hotProductList[index].sPic;
             sPic = Config.domain + sPic.replaceAll('\\', '/');
 
-            return Column(
-              children: <Widget>[
-                Container(
-                  height: ScreenAdapter.height(140),
-                  width: ScreenAdapter.width(140),
-                  margin: EdgeInsets.only(right: ScreenAdapter.width(21)),
-                  child: Image.network(sPic,
-                      // "https://www.itying.com/images/flutter/hot${index + 1}.jpg",
-                      fit: BoxFit.cover),
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                  height: ScreenAdapter.height(44),
-                  child: Text("第${index + 1}条"),
-                )
-              ],
-            );
+            return InkWell(
+                onTap: () {
+                  print(_hotProductList[index].sId);
+                  Navigator.pushNamed(context, '/productContent',
+                      arguments: {"id": _hotProductList[index].sId});
+                },
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: ScreenAdapter.height(140),
+                      width: ScreenAdapter.width(140),
+                      margin: EdgeInsets.only(right: ScreenAdapter.width(21)),
+                      child: Image.network(sPic,
+                          // "https://www.itying.com/images/flutter/hot${index + 1}.jpg",
+                          fit: BoxFit.cover),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                      height: ScreenAdapter.height(44),
+                      child: Text("第${index + 1}条"),
+                    )
+                  ],
+                ));
           },
           itemCount: _hotProductList.length,
         ),
@@ -168,59 +176,66 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           String sPic = value.sPic;
           sPic = Config.domain + sPic.replaceAll('\\', '/');
 
-          return Container(
-            padding: const EdgeInsets.all(10),
-            width: itemWidth,
-            decoration: BoxDecoration(
-                border: Border.all(
-                    color: const Color.fromRGBO(233, 233, 233, 0.9), width: 1)),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  child: AspectRatio(
-                    //防止服务器返回的图片大小不一致导致高度不一致问题
-                    aspectRatio: 1 / 1,
-                    child: Image.network(
-                      sPic,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: ScreenAdapter.height(20)),
-                  child: Text(
-                    "${value.title}",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.black54),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: ScreenAdapter.height(20)),
-                  child: Stack(
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "¥${value.price}",
-                          style: const TextStyle(color: Colors.red, fontSize: 16),
+          return InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, '/productContent',
+                    arguments: {"id": value.sId});
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                width: itemWidth,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        color: const Color.fromRGBO(233, 233, 233, 0.9),
+                        width: 1)),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: double.infinity,
+                      child: AspectRatio(
+                        //防止服务器返回的图片大小不一致导致高度不一致问题
+                        aspectRatio: 1 / 1,
+                        child: Image.network(
+                          sPic,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text("¥${value.oldPrice}",
-                            style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                                decoration: TextDecoration.lineThrough)),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          );
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: ScreenAdapter.height(20)),
+                      child: Text(
+                        "${value.title}",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.black54),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: ScreenAdapter.height(20)),
+                      child: Stack(
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "¥${value.price}",
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 16),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Text("¥${value.oldPrice}",
+                                style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                    decoration: TextDecoration.lineThrough)),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ));
         }).toList(),
       ),
     );
