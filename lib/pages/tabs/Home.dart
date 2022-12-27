@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 //最新版本的flutter中使用flutter_swiper_null_safety替代flutter_swiper，他们的用法都是一样的。
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
+import 'package:dio/dio.dart';
 import '../../services/ScreenAdapter.dart';
+import '../../model/FocusModel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,29 +12,58 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List _focusData = [];
+  @override
+  void initState() {
+    super.initState();
+    _getFocusData();
+  }
+
+  _getFocusData() async {
+    var api = 'https://jdmall.itying.com/api/focus';
+    var result = await Dio().get(api);
+    // print(focusData.data is Map);
+    var focusList = FocusModel.fromJson(result.data); // 使用模型类将json数据转换为页面可用数据
+
+    // print(focusList.result);
+    // focusList.result.forEach((value){
+    //   print(value.title);
+    //   print(value.pic);
+    // });
+
+    setState(() {
+      _focusData = focusList.result!; // 确保数据一定存在，需要加上 !
+    });
+  }
+
   //轮播图
   Widget _swiperWidget() {
-    List<Map> imgList = [
-      {"url": "https://www.itying.com/images/flutter/slide01.jpg"},
-      {"url": "https://www.itying.com/images/flutter/slide02.jpg"},
-      {"url": "https://www.itying.com/images/flutter/slide03.jpg"},
-    ];
+    // List<Map> imgList = [
+    //   {"url": "https://www.itying.com/images/flutter/slide01.jpg"},
+    //   {"url": "https://www.itying.com/images/flutter/slide02.jpg"},
+    //   {"url": "https://www.itying.com/images/flutter/slide03.jpg"},
+    // ];
 
-    return Container(
-      child: AspectRatio(
-        aspectRatio: 2 / 1,
-        child: Swiper(
-            itemBuilder: (BuildContext context, int index) {
-              return Image.network(
-                imgList[index]["url"],
-                fit: BoxFit.fill,
-              );
-            },
-            itemCount: imgList.length,
-            pagination: const SwiperPagination(),
-            autoplay: true),
-      ),
-    );
+    if (_focusData.isNotEmpty) {
+      return Container(
+        child: AspectRatio(
+          aspectRatio: 2 / 1,
+          child: Swiper(
+              itemBuilder: (BuildContext context, int index) {
+                String pic = _focusData[index].pic;
+                return Image.network(
+                  "https://jdmall.itying.com/${pic.replaceAll('\\', '/')}",
+                  fit: BoxFit.fill,
+                );
+              },
+              itemCount: _focusData.length,
+              pagination: const SwiperPagination(),
+              autoplay: true),
+        ),
+      );
+    } else {
+      return const Text('加载中...');
+    }
   }
 
   Widget _titleWidget(value) {
@@ -92,8 +123,8 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(10),
       width: itemWidth, // 单个卡片宽度计算
       decoration: BoxDecoration(
-          border:
-              Border.all(color: const Color.fromRGBO(233, 233, 233, 0.9), width: 1)),
+          border: Border.all(
+              color: const Color.fromRGBO(233, 233, 233, 0.9), width: 1)),
       child: Column(
         children: <Widget>[
           SizedBox(

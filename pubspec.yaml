@@ -41,6 +41,7 @@ dependencies:
   #flutter_screenutil最新版本有点问题，请指定版本安装5.0.0+2的版本，去掉^就是指定版本安装
   #flutter_screenutil提示：Please check the latest version before installation. If there is any problem with the new version, please use the previous version
   flutter_screenutil: ^5.6.0
+  dio: ^4.0.0
 
 dev_dependencies:
   flutter_test:
