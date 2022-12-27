@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import '../pages/tabs/Tabs.dart';
 
 import '../pages/Search.dart';
+import '../pages/ProductList.dart';
 
 //配置路由
 final Map<String,Function> routes = {
   '/': (context) => const Tabs(),
   '/search': (context) => SearchPage(),
+  // 有路由传值
+  '/productList': (context,{arguments}) => ProductListPage(arguments:arguments), // 商品列表子页面
 };
 
 //固定写法
