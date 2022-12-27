@@ -15,7 +15,13 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   int _currentIndex = 0;
 
-  final List _pageList = [HomePage(), CategoryPage(), CartPage(), UserPage()];
+  // final List _pageList = [HomePage(), CategoryPage(), CartPage(), UserPage()];
+  final List <Widget> _pageList=[
+    HomePage(),
+    CategoryPage(),
+    CartPage(),
+    UserPage()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,11 @@ class _TabsState extends State<Tabs> {
       appBar: AppBar(
         title: const Text("shop"),
       ),
-      body: _pageList[_currentIndex], // 依据底部选中tab，对应切换页面
+      // body: _pageList[_currentIndex], // 依据底部选中tab，对应切换页面
+      body: IndexedStack( // 第一次加载所有页面，后续只显示其中一个页面
+        index: _currentIndex,
+        children: _pageList,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
