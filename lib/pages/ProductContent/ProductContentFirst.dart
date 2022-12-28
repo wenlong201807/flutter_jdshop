@@ -7,6 +7,9 @@ import '../../model/ProductContentModel.dart';
 
 import '../../config/Config.dart';
 
+//广播
+import '../../services/EventBus.dart';
+
 class ProductContentFirst extends StatefulWidget {
   final List _productContentList;
   ProductContentFirst(this._productContentList, {Key? key}) : super(key: key);
@@ -16,7 +19,6 @@ class ProductContentFirst extends StatefulWidget {
 
 class _ProductContentFirstState extends State<ProductContentFirst>
     with AutomaticKeepAliveClientMixin {
-
   late ProductContentItem _productContent;
 
   List _attr = [];
@@ -24,6 +26,8 @@ class _ProductContentFirstState extends State<ProductContentFirst>
   String _selectedValue="";
 
   bool get wantKeepAlive => true;
+
+  var actionEventBus;
 
   @override
   void initState() {
@@ -33,49 +37,27 @@ class _ProductContentFirstState extends State<ProductContentFirst>
     this._attr = this._productContent.attr;
 
     _initAttr();
+    //监听广播
+    //监听所有广播
+    // eventBus.on().listen((event) {
+    //   print(event);
+    //   this._attrBottomSheet();
+    // });
 
-    //[{"cate":"鞋面材料","list":["牛皮 "]},{"cate":"闭合方式","list":["系带"]},{"cate":"颜色","list":["红色","白色","黄色"]}]
+    this.actionEventBus=eventBus.on<ProductContentEvent>().listen((str) {
+      print(str);
+      this._attrBottomSheet();
+    });
 
-    // list":["系带","非系带"]
-
-    /*
-    [
-
-        {
-        "cate":"尺寸",
-        list":[{
-
-              "title":"xl",
-              "checked":false
-            },
-            {
-
-              "title":"xxxl",
-              "checked":true
-            },
-          ]
-        },
-        {
-        "cate":"颜色",
-        list":[{
-
-              "title":"黑色",
-              "checked":false
-            },
-            {
-
-              "title":"白色",
-              "checked":true
-            },
-          ]
-        }
-    ]
-   */
+  }
+  //销毁
+  void dispose(){
+    super.dispose();
+    this.actionEventBus.cancel();  //取消事件监听
   }
 
   //初始化Attr 格式化数据
   _initAttr() {
-    //注意attrList属性需要在model中定义
     var attr = this._attr;
     for (var i = 0; i < attr.length; i++) {
       for (var j = 0; j < attr[i].list.length; j++) {
@@ -86,6 +68,7 @@ class _ProductContentFirstState extends State<ProductContentFirst>
         }
       }
     }
+
     // print(attr[0].attrList);
     // print(attr[0].cate);
     // print(attr[0].list);
@@ -111,6 +94,7 @@ class _ProductContentFirstState extends State<ProductContentFirst>
     });
     _getSelectedAttrValue();
   }
+
   //获取选中的值
   _getSelectedAttrValue() {
     var _list = this._attr;
