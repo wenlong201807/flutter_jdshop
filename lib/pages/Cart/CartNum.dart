@@ -4,7 +4,7 @@ import 'package:flutter_jdshop/services/ScreenAdapter.dart';
 
 class CartNum extends StatefulWidget {
   Map _itemData;
-  CartNum(this._itemData,{Key? key}) : super(key: key);
+  CartNum(this._itemData, {Key? key}) : super(key: key);
 
   _CartNumState createState() => _CartNumState();
 }
@@ -14,20 +14,17 @@ class _CartNumState extends State<CartNum> {
   @override
   void initState() {
     super.initState();
-    this._itemData=widget._itemData;
+    this._itemData = widget._itemData;
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: ScreenAdapter.width(164),
       decoration:
-      BoxDecoration(border: Border.all(width: 1, color: Colors.black12)),
+          BoxDecoration(border: Border.all(width: 1, color: Colors.black12)),
       child: Row(
-        children: <Widget>[
-          _leftBtn(),
-          _centerArea(),
-          _rightBtn()
-        ],
+        children: <Widget>[_leftBtn(), _centerArea(), _rightBtn()],
       ),
     );
   }
@@ -49,10 +46,7 @@ class _CartNumState extends State<CartNum> {
   //右侧按钮
   Widget _rightBtn() {
     return InkWell(
-      onTap: (){
-
-
-      },
+      onTap: () {},
       child: Container(
         alignment: Alignment.center,
         width: ScreenAdapter.width(45),
@@ -69,9 +63,9 @@ class _CartNumState extends State<CartNum> {
       width: ScreenAdapter.width(70),
       decoration: BoxDecoration(
           border: Border(
-            left: BorderSide(width: 1, color: Colors.black12),
-            right: BorderSide(width: 1, color: Colors.black12),
-          )),
+        left: BorderSide(width: 1, color: Colors.black12),
+        right: BorderSide(width: 1, color: Colors.black12),
+      )),
       height: ScreenAdapter.height(45),
       child: Text("${_itemData["count"]}"),
     );
