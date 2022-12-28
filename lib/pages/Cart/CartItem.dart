@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_jdshop/pages/Cart/CartNum.dart';
+import 'package:flutter_jdshop/pages/tabs/Cart.dart';
 import 'package:flutter_jdshop/services/ScreenAdapter.dart';
+import 'package:provider/provider.dart';
+import '../../provider/Cart.dart';
 
 class CartItem extends StatefulWidget {
   Map _itemData;
@@ -20,6 +23,7 @@ class _CartItemState extends State<CartItem> {
 
   @override
   Widget build(BuildContext context) {
+    var cartProvider = Provider.of<Cart>(context);
     return Container(
       height: ScreenAdapter.height(200),
       padding: EdgeInsets.all(5),
@@ -30,8 +34,11 @@ class _CartItemState extends State<CartItem> {
           Container(
             width: ScreenAdapter.width(60),
             child: Checkbox(
-              value: true,
-              onChanged: (val) {},
+              value: _itemData["checked"],
+              onChanged: (val) {
+                _itemData["checked"] = !_itemData["checked"];
+                cartProvider.itemChage();
+              },
               activeColor: Colors.pink,
             ),
           ),
