@@ -6,9 +6,9 @@ import '../../widget/JdButton.dart';
 import '../../model/ProductContentModel.dart';
 import '../ProductContent/CartNum.dart';
 import '../../config/Config.dart';
-
 import 'package:provider/provider.dart';
 import '../../provider/Cart.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 //广播
 import '../../services/EventBus.dart';
@@ -42,13 +42,6 @@ class _ProductContentFirstState extends State<ProductContentFirst>
     this._attr = this._productContent.attr;
 
     _initAttr();
-
-    //监听广播
-    //监听所有广播
-    // eventBus.on().listen((event) {
-    //   print(event);
-    //   this._attrBottomSheet();
-    // });
 
     this.actionEventBus = eventBus.on<ProductContentEvent>().listen((str) {
       print(str);
@@ -131,7 +124,9 @@ class _ProductContentFirstState extends State<ProductContentFirst>
             _changeAttr(attrItem.cate, item["title"], setBottomState);
           },
           child: Chip(
-            label: Text("${item["title"]}"),
+            label: Text("${item["title"]}",
+                style: TextStyle(
+                    color: item["checked"] ? Colors.white : Colors.black54)),
             padding: EdgeInsets.all(10),
             backgroundColor: item["checked"] ? Colors.red : Colors.black26,
           ),
@@ -226,6 +221,11 @@ class _ProductContentFirstState extends State<ProductContentFirst>
                                 Navigator.of(context).pop();
                                 //调用Provider 更新数据
                                 this.cartProvider.updateCartList();
+                                Fluttertoast.showToast(
+                                  msg: '加入购物车成功',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                );
                               },
                             ),
                           ),

@@ -3,17 +3,19 @@ import 'dart:convert';
 import '../services/Storage.dart';
 
 class Cart with ChangeNotifier {
-  List _cartList = []; //状态
-  bool _isCheckedAll = false; //状态
+  List _cartList = []; //购物车数据
+  bool _isCheckedAll = false; //全选
+  double _allPrice = 0; //总价
+
   List get cartList => this._cartList;
   bool get isCheckedAll => this._isCheckedAll;
+  double get allPrice => this._allPrice;
 
   Cart() {
     this.init();
   }
   //初始化的时候获取购物车数据
   init() async {
-    //注意：新版shared_preferences增加了可空类型，如果为空不会报错了，所以这里直接可以判断。
     String? cartList = await Storage.getString('cartList');
     if (cartList != null) {
       List cartListData = json.decode(cartList);
@@ -23,17 +25,21 @@ class Cart with ChangeNotifier {
     }
     //获取全选的状态
     this._isCheckedAll = this.isCheckAll();
+    //计算总价
+    this.computeAllPrice();
+
     notifyListeners();
   }
 
-  //更新购物车列表
   updateCartList() {
     this.init();
   }
 
-  //数量改变触发的方法
   itemCountChange() {
     Storage.setString("cartList", json.encode(this._cartList));
+    //计算总价
+    this.computeAllPrice();
+
     notifyListeners();
   }
 
@@ -43,6 +49,9 @@ class Cart with ChangeNotifier {
       this._cartList[i]["checked"] = value;
     }
     this._isCheckedAll = value;
+    //计算总价
+    this.computeAllPrice();
+
     Storage.setString("cartList", json.encode(this._cartList));
     notifyListeners();
   }
@@ -67,7 +76,45 @@ class Cart with ChangeNotifier {
     } else {
       this._isCheckedAll = false;
     }
+    //计算总价
+    this.computeAllPrice();
 
+    Storage.setString("cartList", json.encode(this._cartList));
+    notifyListeners();
+  }
+
+  //计算总价
+  computeAllPrice() {
+    double tempAllPrice = 0;
+    for (var i = 0; i < this._cartList.length; i++) {
+      if (this._cartList[i]["checked"] == true) {
+        tempAllPrice += this._cartList[i]["price"] * this._cartList[i]["count"];
+      }
+    }
+    this._allPrice = tempAllPrice;
+    notifyListeners();
+  }
+
+  //删除数据
+  removeItem() {
+    //  1        2
+    // ['1111','2222','333333333','4444444444']
+    // 错误的写法
+    // for (var i = 0; i < this._cartList.length; i++) {
+    //   if (this._cartList[i]["checked"] == true) {
+    //      this._cartList.removeAt(i);
+    //   }
+    // }
+
+    List tempList = [];
+    for (var i = 0; i < this._cartList.length; i++) {
+      if (this._cartList[i]["checked"] == false) {
+        tempList.add(this._cartList[i]);
+      }
+    }
+    this._cartList = tempList;
+    //计算总价
+    this.computeAllPrice();
     Storage.setString("cartList", json.encode(this._cartList));
     notifyListeners();
   }

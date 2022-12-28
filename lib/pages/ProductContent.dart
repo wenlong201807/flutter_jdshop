@@ -13,6 +13,12 @@ import '../model/ProductContentModel.dart';
 
 import '../widget/LoadingWidget.dart';
 
+import 'package:provider/provider.dart';
+import '../provider/Cart.dart';
+import '../services/CartServices.dart';
+
+import 'package:fluttertoast/fluttertoast.dart';
+
 //广播
 import '../services/EventBus.dart';
 
@@ -41,9 +47,6 @@ class _ProductContentPageState extends State<ProductContentPage> {
     print(api);
     var result = await Dio().get(api);
     var productContent = new ProductContentModel.fromJson(result.data);
-    // print(productContent.result.pic);
-
-    // print(productContent.result.title);
 
     setState(() {
       this._productContentList.add(productContent.result);
@@ -52,6 +55,8 @@ class _ProductContentPageState extends State<ProductContentPage> {
 
   @override
   Widget build(BuildContext context) {
+    var cartProvider = Provider.of<Cart>(context);
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -107,7 +112,7 @@ class _ProductContentPageState extends State<ProductContentPage> {
             ? Stack(
                 children: <Widget>[
                   TabBarView(
-                    physics: NeverScrollableScrollPhysics(), //禁止 pageView 滑动,
+                    physics: NeverScrollableScrollPhysics(), //禁止左右滑动
                     children: <Widget>[
                       ProductContentFirst(this._productContentList),
                       ProductContentSecond(this._productContentList),
@@ -125,19 +130,24 @@ class _ProductContentPageState extends State<ProductContentPage> {
                           color: Colors.white),
                       child: Row(
                         children: <Widget>[
-                          Container(
-                            padding:
-                                EdgeInsets.only(top: ScreenAdapter.height(10)),
-                            width: 100,
-                            height: ScreenAdapter.height(88),
-                            child: Column(
-                              children: <Widget>[
-                                Icon(Icons.shopping_cart,
-                                    size: ScreenAdapter.size(36)),
-                                Text("购物车",
-                                    style: TextStyle(
-                                        fontSize: ScreenAdapter.size(24)))
-                              ],
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/cart');
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  top: ScreenAdapter.height(10)),
+                              width: 100,
+                              height: ScreenAdapter.height(78),
+                              child: Column(
+                                children: <Widget>[
+                                  Icon(Icons.shopping_cart,
+                                      size: ScreenAdapter.size(36)),
+                                  Text("购物车",
+                                      style: TextStyle(
+                                          fontSize: ScreenAdapter.size(24)))
+                                ],
+                              ),
                             ),
                           ),
                           Expanded(
@@ -145,14 +155,22 @@ class _ProductContentPageState extends State<ProductContentPage> {
                             child: JdButton(
                               color: Color.fromRGBO(253, 1, 0, 0.9),
                               text: "加入购物车",
-                              cb: () {
+                              cb: () async {
                                 if (this._productContentList[0].attr.length >
                                     0) {
                                   //广播 弹出筛选
                                   eventBus
                                       .fire(new ProductContentEvent('加入购物车'));
                                 } else {
-                                  print("加入购物车操作");
+                                  await CartServices.addCart(
+                                      this._productContentList[0]);
+                                  //调用Provider 更新数据
+                                  cartProvider.updateCartList();
+                                  Fluttertoast.showToast(
+                                    msg: '加入购物车成功',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                  );
                                 }
                               },
                             ),

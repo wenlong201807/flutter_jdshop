@@ -46,6 +46,7 @@ dependencies:
   flutter_inappwebview: ^5.7.2+3
   provider: ^6.0.5
   event_bus: ^2.0.0
+  fluttertoast: ^8.0.7
 
 dev_dependencies:
   flutter_test:

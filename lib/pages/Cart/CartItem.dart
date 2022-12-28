@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_jdshop/pages/Cart/CartNum.dart';
-import 'package:flutter_jdshop/pages/tabs/Cart.dart';
-import 'package:flutter_jdshop/services/ScreenAdapter.dart';
+import '../../pages/Cart/CartNum.dart';
+import '../../services/ScreenAdapter.dart';
 import 'package:provider/provider.dart';
 import '../../provider/Cart.dart';
 
@@ -14,15 +13,12 @@ class CartItem extends StatefulWidget {
 
 class _CartItemState extends State<CartItem> {
   late Map _itemData;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    this._itemData = widget._itemData;
-  }
 
   @override
   Widget build(BuildContext context) {
+    //注意：给属性赋值
+    this._itemData = widget._itemData;
+
     var cartProvider = Provider.of<Cart>(context);
     return Container(
       height: ScreenAdapter.height(200),

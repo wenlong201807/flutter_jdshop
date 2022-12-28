@@ -47,8 +47,6 @@ class CartServices {
 
       */
 
-    //注意：新版shared_preferences增加了可空类型，如果为空不会报错了，所以这里直接可以判断。
-
     String? cartList = await Storage.getString('cartList');
     if (cartList != null) {
       List cartListData = json.decode(cartList);
@@ -86,7 +84,12 @@ class CartServices {
     final Map data = new Map<String, dynamic>();
     data['_id'] = item.sId;
     data['title'] = item.title;
-    data['price'] = item.price;
+    //处理 string 和int类型的价格
+    if (item.price is int || item.price is double) {
+      data['price'] = item.price;
+    } else {
+      data['price'] = double.parse(item.price);
+    }
     data['selectedAttr'] = item.selectedAttr;
     data['count'] = item.count;
     data['pic'] = pic;

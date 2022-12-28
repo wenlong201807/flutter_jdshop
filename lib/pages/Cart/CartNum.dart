@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_jdshop/services/ScreenAdapter.dart';
+import '../../services/ScreenAdapter.dart';
 import 'package:provider/provider.dart';
 import '../../provider/Cart.dart';
 
@@ -14,14 +14,12 @@ class CartNum extends StatefulWidget {
 class _CartNumState extends State<CartNum> {
   late Map _itemData;
   var cartProvider;
-  @override
-  void initState() {
-    super.initState();
-    this._itemData = widget._itemData;
-  }
 
   @override
   Widget build(BuildContext context) {
+    //注意
+    this._itemData = widget._itemData;
+
     this.cartProvider = Provider.of<Cart>(context);
 
     return Container(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_jdshop/services/ScreenAdapter.dart';
+import '../../services/ScreenAdapter.dart';
 import '../../model/ProductContentModel.dart';
 
 class CartNum extends StatefulWidget {
@@ -15,7 +15,7 @@ class _CartNumState extends State<CartNum> {
   late ProductContentItem _productContent;
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
     this._productContent = widget._productContent;
   }
