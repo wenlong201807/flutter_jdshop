@@ -183,19 +183,14 @@ class _ProductContentFirstState extends State<ProductContentFirst>
                         Container(
                           margin: EdgeInsets.only(top: 10),
                           height: ScreenAdapter.height(80),
-                          child: InkWell(
-                            onTap: () {
-                              _attrBottomSheet();
-                            },
-                            child: Row(
-                              children: <Widget>[
-                                Text("数量: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                SizedBox(width: 10),
-                                CartNum(this._productContent)
-                              ],
-                            ),
+                          child: Row(
+                            children: <Widget>[
+                              Text("数量: ",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(width: 10),
+                              CartNum(this._productContent)
+                            ],
                           ),
                         )
                       ],

@@ -15,7 +15,7 @@ class _CartNumState extends State<CartNum> {
   late ProductContentItem _productContent;
   @override
   void initState() {
-    // implement initState
+    // TODO: implement initState
     super.initState();
     this._productContent = widget._productContent;
   }
@@ -23,9 +23,10 @@ class _CartNumState extends State<CartNum> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: ScreenAdapter.width(164),
-      decoration:
-          BoxDecoration(border: Border.all(width: 1, color: Colors.black12)),
+      width: ScreenAdapter.width(168),
+      decoration: BoxDecoration(
+          border:
+              Border.all(width: ScreenAdapter.width(2), color: Colors.black12)),
       child: Row(
         children: <Widget>[_leftBtn(), _centerArea(), _rightBtn()],
       ),
@@ -76,8 +77,8 @@ class _CartNumState extends State<CartNum> {
       width: ScreenAdapter.width(70),
       decoration: BoxDecoration(
           border: Border(
-        left: BorderSide(width: 1, color: Colors.black12),
-        right: BorderSide(width: 1, color: Colors.black12),
+        left: BorderSide(width: ScreenAdapter.width(2), color: Colors.black12),
+        right: BorderSide(width: ScreenAdapter.width(2), color: Colors.black12),
       )),
       height: ScreenAdapter.height(45),
       child: Text("${this._productContent.count}"),
