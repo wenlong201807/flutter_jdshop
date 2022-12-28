@@ -93,7 +93,7 @@ class ProductContentItem {
 class Attr {
   late String cate;
   late List<String> list;
-
+  List<Map> attrList=[];   //自定义的attrList
   Attr({
     required this.cate,
     required this.list,

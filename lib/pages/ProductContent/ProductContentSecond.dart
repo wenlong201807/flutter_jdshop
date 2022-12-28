@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../../widget/LoadingWidget.dart';
 
 class ProductContentSecond extends StatefulWidget {
   final List _productContentList;
@@ -7,11 +9,44 @@ class ProductContentSecond extends StatefulWidget {
   _ProductContentSecondState createState() => _ProductContentSecondState();
 }
 
-class _ProductContentSecondState extends State<ProductContentSecond> {
+class _ProductContentSecondState extends State<ProductContentSecond>
+    with AutomaticKeepAliveClientMixin {
+  var _flag = true;
+  var _id;
+  bool get wantKeepAlive => true;
+  @override
+  void initState() {
+    super.initState();
+    this._id = widget._productContentList[0].sId;
+    print(this._id);
+    // https://jdmall.itying.com/pcontent?id=5a0425bc010e711234661439
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text("详情"),
+      child: Column(
+        children: [
+          this._flag ? LoadingWidget() : Text(""),
+          Expanded(
+              child: InAppWebView(
+            //老版本：initialUrl    新版本：initialUrlRequest
+            initialUrlRequest: URLRequest(
+                url: Uri.parse(
+                    "https://jdmall.itying.com/pcontent?id=${this._id}")),
+            onProgressChanged:
+                (InAppWebViewController controller, int progress) {
+              print(progress / 100);
+
+              if (progress / 100 > 0.9) {
+                setState(() {
+                  this._flag = false;
+                });
+              }
+            },
+          ))
+        ],
+      ),
     );
   }
 }

@@ -100,10 +100,11 @@ class _ProductContentPageState extends State<ProductContentPage> {
             )
           ],
         ),
-        body: _productContentList.isNotEmpty
+        body: this._productContentList.length > 0
             ? Stack(
                 children: <Widget>[
                   TabBarView(
+                    physics: NeverScrollableScrollPhysics(), //禁止 pageView 滑动
                     children: <Widget>[
                       ProductContentFirst(this._productContentList),
                       ProductContentSecond(this._productContentList),
@@ -128,8 +129,10 @@ class _ProductContentPageState extends State<ProductContentPage> {
                             height: ScreenAdapter.height(88),
                             child: Column(
                               children: <Widget>[
-                                Icon(Icons.shopping_cart,
-                                    size: ScreenAdapter.size(38)),
+                                Icon(
+                                  Icons.shopping_cart,
+                                  size: ScreenAdapter.size(36),
+                                ),
                                 Text("购物车",
                                     style: TextStyle(
                                         fontSize: ScreenAdapter.size(24)))
