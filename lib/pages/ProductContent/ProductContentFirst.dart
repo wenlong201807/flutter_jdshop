@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_jdshop/services/ScreenAdapter.dart';
-import 'package:flutter_jdshop/widget/JdButton.dart';
-
+import '../../services/CartServices.dart';
+import '../../services/ScreenAdapter.dart';
+import '../../widget/JdButton.dart';
 import '../../model/ProductContentModel.dart';
-
+import '../ProductContent/CartNum.dart';
 import '../../config/Config.dart';
+
+import 'package:provider/provider.dart';
+import '../../provider/Cart.dart';
 
 //广播
 import '../../services/EventBus.dart';
@@ -23,11 +26,13 @@ class _ProductContentFirstState extends State<ProductContentFirst>
 
   List _attr = [];
 
-  String _selectedValue="";
+  String _selectedValue = "";
 
   bool get wantKeepAlive => true;
 
   var actionEventBus;
+
+  var cartProvider;
 
   @override
   void initState() {
@@ -37,6 +42,7 @@ class _ProductContentFirstState extends State<ProductContentFirst>
     this._attr = this._productContent.attr;
 
     _initAttr();
+
     //监听广播
     //监听所有广播
     // eventBus.on().listen((event) {
@@ -44,16 +50,16 @@ class _ProductContentFirstState extends State<ProductContentFirst>
     //   this._attrBottomSheet();
     // });
 
-    this.actionEventBus=eventBus.on<ProductContentEvent>().listen((str) {
+    this.actionEventBus = eventBus.on<ProductContentEvent>().listen((str) {
       print(str);
       this._attrBottomSheet();
     });
-
   }
+
   //销毁
-  void dispose(){
+  void dispose() {
     super.dispose();
-    this.actionEventBus.cancel();  //取消事件监听
+    this.actionEventBus.cancel(); //取消事件监听
   }
 
   //初始化Attr 格式化数据
@@ -109,6 +115,8 @@ class _ProductContentFirstState extends State<ProductContentFirst>
     // print(tempArr.join(','));
     setState(() {
       this._selectedValue = tempArr.join(',');
+      //给筛选属性赋值
+      this._productContent.selectedAttr = this._selectedValue;
     });
   }
 
@@ -175,7 +183,26 @@ class _ProductContentFirstState extends State<ProductContentFirst>
                       children: <Widget>[
                         Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: _getAttrWidget(setBottomState))
+                            children: _getAttrWidget(setBottomState)),
+                        Divider(),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          height: ScreenAdapter.height(80),
+                          child: InkWell(
+                            onTap: () {
+                              _attrBottomSheet();
+                            },
+                            child: Row(
+                              children: <Widget>[
+                                Text("数量: ",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                SizedBox(width: 10),
+                                CartNum(this._productContent)
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -192,8 +219,13 @@ class _ProductContentFirstState extends State<ProductContentFirst>
                             child: JdButton(
                               color: Color.fromRGBO(253, 1, 0, 0.9),
                               text: "加入购物车",
-                              cb: () {
-                                print('加入购物车');
+                              cb: () async {
+                                await CartServices.addCart(
+                                    this._productContent);
+                                //关闭底部筛选属性
+                                Navigator.of(context).pop();
+                                //调用Provider 更新数据
+                                this.cartProvider.updateCartList();
                               },
                             ),
                           ),
@@ -222,6 +254,8 @@ class _ProductContentFirstState extends State<ProductContentFirst>
 
   @override
   Widget build(BuildContext context) {
+    this.cartProvider = Provider.of<Cart>(context);
+
     //处理图片
     String pic = Config.domain + this._productContent.pic;
     pic = pic.replaceAll('\\', '/');
@@ -284,21 +318,21 @@ class _ProductContentFirstState extends State<ProductContentFirst>
           //筛选
           this._attr.length > 0
               ? Container(
-            margin: EdgeInsets.only(top: 10),
-            height: ScreenAdapter.height(80),
-            child: InkWell(
-              onTap: () {
-                _attrBottomSheet();
-              },
-              child: Row(
-                children: <Widget>[
-                  Text("已选: ",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("${this._selectedValue}")
-                ],
-              ),
-            ),
-          )
+                  margin: EdgeInsets.only(top: 10),
+                  height: ScreenAdapter.height(80),
+                  child: InkWell(
+                    onTap: () {
+                      _attrBottomSheet();
+                    },
+                    child: Row(
+                      children: <Widget>[
+                        Text("已选: ",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text("${this._selectedValue}")
+                      ],
+                    ),
+                  ),
+                )
               : Text(""),
           Divider(),
           Container(

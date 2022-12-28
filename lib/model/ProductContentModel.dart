@@ -33,6 +33,10 @@ class ProductContentItem {
   int? salecount;
   String? subTitle;
 
+  //新增
+  int count=1;
+  String selectedAttr="";
+
   ProductContentItem({
     this.sId,
     this.title,
