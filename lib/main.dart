@@ -5,6 +5,7 @@ import 'routers/router.dart';
 // 引入provider
 import 'package:provider/provider.dart';
 import 'provider/Counter.dart';
+import 'provider/Cart.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,6 +26,7 @@ class _MyAppState extends State<MyApp> {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => Counter()),
+            ChangeNotifierProvider(create: (_) => Cart()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
