@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../services/ScreenAdapter.dart';
 
+import '../../services/UserServices.dart';
+import '../../services/SignServices.dart';
+
+import '../../config/Config.dart';
+import 'package:dio/dio.dart';
+
+import '../../services/EventBus.dart';
+
 class AddressListPage extends StatefulWidget {
   AddressListPage({Key? key}) : super(key: key);
 
@@ -8,6 +16,39 @@ class AddressListPage extends StatefulWidget {
 }
 
 class _AddressListPageState extends State<AddressListPage> {
+  List addressList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    this._getAddressList();
+
+    //监听增加收货地址的广播
+    eventBus.on<AddressEvent>().listen((event) {
+      print(event.str);
+      this._getAddressList();
+    });
+  }
+
+  _getAddressList() async {
+    //请求接口
+    List userinfo = await UserServices.getUserInfo();
+
+    var tempJson = {"uid": userinfo[0]['_id'], "salt": userinfo[0]["salt"]};
+
+    var sign = SignServices.getSign(tempJson);
+
+    var api =
+        '${Config.domain}api/addressList?uid=${userinfo[0]['_id']}&sign=${sign}';
+
+    var response = await Dio().get(api);
+    // print(response.data["result"]);
+
+    setState(() {
+      this.addressList = response.data["result"];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,65 +58,48 @@ class _AddressListPageState extends State<AddressListPage> {
         body: Container(
           child: Stack(
             children: <Widget>[
-              ListView(
-                children: <Widget>[
-                   SizedBox(height: 20),
-                  ListTile(
-                    leading: Icon(Icons.check, color: Colors.red),
-                    title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("张三  15201681234"),
-                          SizedBox(height: 10),
-                          Text("北京市海淀区西二旗"),
-                        ]),
-                    trailing: Icon(Icons.edit, color: Colors.blue),
-                  ),
-                  Divider(height: 20),
-                  ListTile(
-                    title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("张三  15201xxxx234"),
-                          SizedBox(height: 10),
-                          Text("北京市海defdsafaf西二旗"),
-                        ]),
-                    trailing: Icon(Icons.edit, color: Colors.blue),
-                  ),
-                  Divider(height: 20),
-                  ListTile(
-                    title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("张三  15201xxxx234"),
-                          SizedBox(height: 10),
-                          Text("北京市海defdsafaf西二旗"),
-                        ]),
-                    trailing: Icon(Icons.edit, color: Colors.blue),
-                  ),
-                  Divider(height: 20),
-                  ListTile(
-                    title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("张三  15201xxxx234"),
-                          SizedBox(height: 10),
-                          Text("北京市海defdsafaf西二旗"),
-                        ]),
-                    trailing: Icon(Icons.edit, color: Colors.blue),
-                  ),
-                  Divider(height: 20),
-                  ListTile(
-                    title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("张三  15201xxxx234"),
-                          SizedBox(height: 10),
-                          Text("北京市海defdsafaf西二旗"),
-                        ]),
-                    trailing: Icon(Icons.edit, color: Colors.blue),
-                  ),
-                ],
+              ListView.builder(
+                itemCount: this.addressList.length,
+                itemBuilder: (context, index) {
+                  if (this.addressList[index]["default_address"] == 1) {
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(height: 20),
+                        ListTile(
+                          leading: Icon(Icons.check, color: Colors.red),
+                          title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                    "${this.addressList[index]["name"]}  ${this.addressList[index]["phone"]}"),
+                                SizedBox(height: 10),
+                                Text("${this.addressList[index]["address"]}"),
+                              ]),
+                          trailing: Icon(Icons.edit, color: Colors.blue),
+                        ),
+                        Divider(height: 20),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(height: 20),
+                        ListTile(
+                          title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                    "${this.addressList[index]["name"]}  ${this.addressList[index]["phone"]}"),
+                                SizedBox(height: 10),
+                                Text("${this.addressList[index]["address"]}"),
+                              ]),
+                          trailing: Icon(Icons.edit, color: Colors.blue),
+                        ),
+                        Divider(height: 20),
+                      ],
+                    );
+                  }
+                },
               ),
               Positioned(
                 bottom: 0,
@@ -97,8 +121,8 @@ class _AddressListPageState extends State<AddressListPage> {
                         Text("增加收货地址", style: TextStyle(color: Colors.white))
                       ],
                     ),
-                    onTap: (){
-                      Navigator.pushNamed(context,'/addressAdd');
+                    onTap: () {
+                      Navigator.pushNamed(context, '/addressAdd');
                     },
                   ),
                 ),

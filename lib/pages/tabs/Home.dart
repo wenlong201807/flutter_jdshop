@@ -6,7 +6,6 @@ import '../../services/ScreenAdapter.dart';
 import '../../model/FocusModel.dart';
 import '../../model/ProductModel.dart';
 import '../../config/Config.dart';
-import '../../services/SignServices.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -29,7 +28,6 @@ class _HomePageState extends State<HomePage>
     _getFocusData();
     _getHotProductData();
     _getBestProductData();
-    SignServices.getSign();
   }
 
   //获取轮播图数据

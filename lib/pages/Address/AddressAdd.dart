@@ -8,6 +8,14 @@ import '../../widget/JdButton.dart';
 
 import 'package:city_pickers/city_pickers.dart';
 
+import '../../services/UserServices.dart';
+import '../../services/SignServices.dart';
+
+import '../../config/Config.dart';
+import 'package:dio/dio.dart';
+
+import '../../services/EventBus.dart';
+
 class AddressAddPage extends StatefulWidget {
   AddressAddPage({Key? key}) : super(key: key);
 
@@ -15,8 +23,17 @@ class AddressAddPage extends StatefulWidget {
 }
 
 class _AddressAddPageState extends State<AddressAddPage> {
+  String area = '';
+  String name = '';
+  String phone = '';
+  String address = '';
 
-  String area='';
+  //监听页面销毁的事件
+  dispose() {
+    super.dispose();
+    eventBus.fire(new AddressEvent('增加成功...'));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,10 +47,16 @@ class _AddressAddPageState extends State<AddressAddPage> {
               SizedBox(height: 20),
               JdText(
                 text: "收货人姓名",
+                onChanged: (value) {
+                  this.name = value;
+                },
               ),
               SizedBox(height: 10),
               JdText(
                 text: "收货人电话",
+                onChanged: (value) {
+                  this.phone = value;
+                },
               ),
               SizedBox(height: 10),
               Container(
@@ -46,25 +69,29 @@ class _AddressAddPageState extends State<AddressAddPage> {
                   child: Row(
                     children: <Widget>[
                       Icon(Icons.add_location),
-                      this.area.length>0?Text('${this.area}', style: TextStyle(color: Colors.black54)):Text('省/市/区', style: TextStyle(color: Colors.black54))
+                      this.area.length > 0
+                          ? Text('${this.area}',
+                              style: TextStyle(color: Colors.black54))
+                          : Text('省/市/区',
+                              style: TextStyle(color: Colors.black54))
                     ],
                   ),
-                  onTap: () async{
-                    //最新版本的Flutter注意返回的类型  需要判断是否为空
+                  onTap: () async {
+                    //新版Flutter中注意空判断
                     Result? result = await CityPickers.showCityPicker(
                         context: context,
                         cancelWidget:
                             Text("取消", style: TextStyle(color: Colors.blue)),
                         confirmWidget:
-                            Text("确定", style: TextStyle(color: Colors.blue))
-                    );
+                            Text("确定", style: TextStyle(color: Colors.blue)));
 
                     // print(result);
-                    setState(() {
-                      if(result!=null){
-                          this.area= "${result.provinceName}/${result.cityName}/${result.areaName}";
-                      }
-                    });
+                    if (result != null) {
+                      setState(() {
+                        this.area =
+                            "${result.provinceName}/${result.cityName}/${result.areaName}";
+                      });
+                    }
                   },
                 ),
               ),
@@ -73,10 +100,46 @@ class _AddressAddPageState extends State<AddressAddPage> {
                 text: "详细地址",
                 maxLines: 4,
                 height: 200,
+                onChanged: (value) {
+                  this.address = "${this.area} ${value}";
+                },
               ),
               SizedBox(height: 10),
               SizedBox(height: 40),
-              JdButton(text: "增加", color: Colors.red)
+              JdButton(
+                  text: "增加",
+                  color: Colors.red,
+                  cb: () async {
+                    List userinfo = await UserServices.getUserInfo();
+
+                    print(userinfo);
+
+                    // print('1234');
+                    var tempJson = {
+                      "uid": userinfo[0]["_id"],
+                      "name": this.name,
+                      "phone": this.phone,
+                      "address": this.address,
+                      "salt": userinfo[0]["salt"]
+                    };
+
+                    var sign = SignServices.getSign(tempJson);
+                    // print(sign);
+
+                    var api = '${Config.domain}api/addAddress';
+                    var result = await Dio().post(api, data: {
+                      "uid": userinfo[0]["_id"],
+                      "name": this.name,
+                      "phone": this.phone,
+                      "address": this.address,
+                      "sign": sign
+                    });
+
+                    // if(result.data["success"]){
+
+                    // }
+                    Navigator.pop(context);
+                  })
             ],
           ),
         ));
