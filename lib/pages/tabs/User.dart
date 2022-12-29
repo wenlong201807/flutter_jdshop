@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_jdshop/widget/JdButton.dart';
 import '../../services/ScreenAdapter.dart';
 import '../../services/UserServices.dart';
+import '../../services/EventBus.dart';
 
 class UserPage extends StatefulWidget {
   UserPage({Key? key}) : super(key: key);
@@ -17,15 +18,20 @@ class _UserPageState extends State<UserPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
     this._getUserinfo();
+
+    //监听登录页面改变的事件
+    eventBus.on<UserEvent>().listen((event) {
+      print(event.str);
+      this._getUserinfo();
+    });
   }
 
   _getUserinfo() async {
     var isLogin = await UserServices.getUserLoginState();
     var userInfo = await UserServices.getUserInfo();
-
     setState(() {
       this.userInfo = userInfo;
       this.isLogin = isLogin;
@@ -118,13 +124,19 @@ class _UserPageState extends State<UserPage> {
           title: Text("在线客服"),
         ),
         Divider(),
-        JdButton(
-          text: "退出登录",
-          cb: () {
-            UserServices.loginOut();
-            this._getUserinfo();
-          },
-        )
+        this.isLogin
+            ? Container(
+                padding: EdgeInsets.all(20),
+                child: JdButton(
+                  color: Colors.red,
+                  text: "退出登录",
+                  cb: () {
+                    UserServices.loginOut();
+                    this._getUserinfo();
+                  },
+                ),
+              )
+            : Text("")
       ],
     ));
   }
