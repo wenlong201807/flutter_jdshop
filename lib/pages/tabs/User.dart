@@ -32,6 +32,7 @@ class _UserPageState extends State<UserPage> {
   _getUserinfo() async {
     var isLogin = await UserServices.getUserLoginState();
     var userInfo = await UserServices.getUserInfo();
+
     setState(() {
       this.userInfo = userInfo;
       this.isLogin = isLogin;
@@ -99,6 +100,9 @@ class _UserPageState extends State<UserPage> {
         ListTile(
           leading: Icon(Icons.assignment, color: Colors.red),
           title: Text("全部订单"),
+          onTap: () {
+            Navigator.pushNamed(context, '/order');
+          },
         ),
         Divider(),
         ListTile(
