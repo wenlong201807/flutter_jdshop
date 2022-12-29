@@ -4,9 +4,15 @@ import '../services/ScreenAdapter.dart';
 class JdButton extends StatelessWidget {
   final Color color;
   final String text;
-  final Function()? cb; //注意：新版Flutter中需要把cb定义成Function()类型或者var类型
+  // final Function()? cb;    //注意：新版flutter中cb的类型为Function()?   或者也可以定义成var
+  var cb;
+  final double height;
   JdButton(
-      {Key? key, this.color = Colors.black, this.text = "按钮", this.cb = null})
+      {Key? key,
+      this.color = Colors.black,
+      this.text = "按钮",
+      this.cb = null,
+      this.height = 68})
       : super(key: key);
 
   @override
@@ -14,9 +20,9 @@ class JdButton extends StatelessWidget {
     return InkWell(
       onTap: this.cb,
       child: Container(
-        margin: EdgeInsets.all(ScreenAdapter.height(10)),
-        padding: EdgeInsets.all(ScreenAdapter.height(10)),
-        height: ScreenAdapter.height(68),
+        margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(5),
+        height: ScreenAdapter.height(this.height),
         width: double.infinity,
         decoration: BoxDecoration(
             color: color, borderRadius: BorderRadius.circular(10)),

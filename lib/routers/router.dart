@@ -14,6 +14,7 @@ import '../pages/CheckOut.dart';
 import '../pages/Address/AddressAdd.dart';
 import '../pages/Address/AddressEdit.dart';
 import '../pages/Address/AddressList.dart';
+import '../pages/Pay.dart';
 
 //配置路由
 final Map<String, Function> routes = {
@@ -35,6 +36,7 @@ final Map<String, Function> routes = {
   '/addressEdit': (context, {arguments}) =>
       AddressEditPage(arguments: arguments),
   '/addressList': (context) => AddressListPage(),
+  '/pay': (context) => PayPage(),
 };
 
 //固定写法
