@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_jdshop/services/CartServices.dart';
 import '../../services/ScreenAdapter.dart';
+import '../../services/UserServices.dart';
 import 'package:provider/provider.dart';
 import '../../provider/Cart.dart';
-
+import '../../provider/CheckOut.dart';
 import '../Cart/CartItem.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CartPage extends StatefulWidget {
   CartPage({Key? key}) : super(key: key);
@@ -14,6 +17,8 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   bool _isEdit = false;
+
+  var checkOutProvider;
   @override
   void initState() {
     super.initState();
@@ -22,15 +27,39 @@ class _CartPageState extends State<CartPage> {
 
   //去结算
 
-  doCheckOut() {
-    //判断用户有没有登录    保存购物车选中的数据
-
-    Navigator.pushNamed(context, '/checkOut');
+  doCheckOut() async {
+    //1、获取购物车选中的数据
+    List checkOutData = await CartServices.getCheckOutData();
+    //2、保存购物车选中的数据
+    this.checkOutProvider.changeCheckOutListData(checkOutData);
+    //3、购物车有没有选中的数据
+    if (checkOutData.length > 0) {
+      //4、判断用户有没有登录
+      var loginState = await UserServices.getUserLoginState();
+      if (loginState) {
+        Navigator.pushNamed(context, '/checkOut');
+      } else {
+        Fluttertoast.showToast(
+          msg: '您还没有登录，请登录以后再去结算',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+        );
+        Navigator.pushNamed(context, '/login');
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: '购物车没有选中的数据',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var cartProvider = Provider.of<Cart>(context);
+
+    checkOutProvider = Provider.of<CheckOut>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -104,7 +133,10 @@ class _CartPageState extends State<CartPage> {
                                 child: ElevatedButton(
                                   child: Text("结算",
                                       style: TextStyle(color: Colors.white)),
-                                  // color: Colors.red,
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                      MaterialStateProperty.all(
+                                          Colors.red)),
                                   onPressed: doCheckOut,
                                 ),
                               )
