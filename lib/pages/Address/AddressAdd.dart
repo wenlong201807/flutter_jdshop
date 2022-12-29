@@ -1,19 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_jdshop/services/ScreenAdapter.dart';
-
 import '../../widget/JdText.dart';
-
 import '../../widget/JdButton.dart';
-
 import 'package:city_pickers/city_pickers.dart';
-
 import '../../services/UserServices.dart';
 import '../../services/SignServices.dart';
-
 import '../../config/Config.dart';
 import 'package:dio/dio.dart';
-
 import '../../services/EventBus.dart';
 
 class AddressAddPage extends StatefulWidget {
@@ -32,6 +26,7 @@ class _AddressAddPageState extends State<AddressAddPage> {
   dispose() {
     super.dispose();
     eventBus.fire(new AddressEvent('增加成功...'));
+    eventBus.fire(new CheckOutEvent('改收货地址成功...'));
   }
 
   @override
@@ -77,7 +72,6 @@ class _AddressAddPageState extends State<AddressAddPage> {
                     ],
                   ),
                   onTap: () async {
-                    //新版Flutter中注意空判断
                     Result? result = await CityPickers.showCityPicker(
                         context: context,
                         cancelWidget:
@@ -85,7 +79,6 @@ class _AddressAddPageState extends State<AddressAddPage> {
                         confirmWidget:
                             Text("确定", style: TextStyle(color: Colors.blue)));
 
-                    // print(result);
                     if (result != null) {
                       setState(() {
                         this.area =
