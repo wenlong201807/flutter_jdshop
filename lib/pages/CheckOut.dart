@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/ScreenAdapter.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../provider/CheckOut.dart';
 import '../provider/Cart.dart';
 import '../services/UserServices.dart';
@@ -192,45 +193,54 @@ class _CheckOutPageState extends State<CheckOutPage> {
                           backgroundColor:
                               MaterialStateProperty.all(Colors.red)),
                       onPressed: () async {
-                        List userinfo = await UserServices.getUserInfo();
-                        //注意：商品总价保留一位小数
-                        var allPrice = CheckOutServices.getAllPrice(
-                                checkOutProvider.checkOutListData)
-                            .toStringAsFixed(1);
+                        // 必须存在收货地址，才能下单
+                        if (this._addressList.length > 0) {
+                          List userinfo = await UserServices.getUserInfo();
+                          //注意：商品总价保留一位小数
+                          var allPrice = CheckOutServices.getAllPrice(
+                                  checkOutProvider.checkOutListData)
+                              .toStringAsFixed(1);
 
-                        //获取签名
-                        var sign = SignServices.getSign({
-                          "uid": userinfo[0]["_id"],
-                          "phone": this._addressList[0]["phone"],
-                          "address": this._addressList[0]["address"],
-                          "name": this._addressList[0]["name"],
-                          "all_price": allPrice,
-                          "products":
-                              json.encode(checkOutProvider.checkOutListData),
-                          "salt": userinfo[0]["salt"] //私钥
-                        });
-                        //请求接口
-                        var api = '${Config.domain}api/doOrder';
-                        var response = await Dio().post(api, data: {
-                          "uid": userinfo[0]["_id"],
-                          "phone": this._addressList[0]["phone"],
-                          "address": this._addressList[0]["address"],
-                          "name": this._addressList[0]["name"],
-                          "all_price": allPrice,
-                          "products":
-                              json.encode(checkOutProvider.checkOutListData),
-                          "sign": sign
-                        });
-                        print(response);
-                        if (response.data["success"]) {
-                          //删除购物车选中的商品数据
-                          await CheckOutServices.removeUnSelectedCartItem();
+                          //获取签名
+                          var sign = SignServices.getSign({
+                            "uid": userinfo[0]["_id"],
+                            "phone": this._addressList[0]["phone"],
+                            "address": this._addressList[0]["address"],
+                            "name": this._addressList[0]["name"],
+                            "all_price": allPrice,
+                            "products":
+                                json.encode(checkOutProvider.checkOutListData),
+                            "salt": userinfo[0]["salt"] //私钥
+                          });
+                          //请求接口
+                          var api = '${Config.domain}api/doOrder';
+                          var response = await Dio().post(api, data: {
+                            "uid": userinfo[0]["_id"],
+                            "phone": this._addressList[0]["phone"],
+                            "address": this._addressList[0]["address"],
+                            "name": this._addressList[0]["name"],
+                            "all_price": allPrice,
+                            "products":
+                                json.encode(checkOutProvider.checkOutListData),
+                            "sign": sign
+                          });
+                          print(response);
+                          if (response.data["success"]) {
+                            //删除购物车选中的商品数据
+                            await CheckOutServices.removeUnSelectedCartItem();
 
-                          //调用CartProvider更新购物车数据
-                          cartProvider.updateCartList();
+                            //调用CartProvider更新购物车数据
+                            cartProvider.updateCartList();
 
-                          //跳转到支付页面
-                          Navigator.pushNamed(context, '/pay');
+                            //跳转到支付页面
+                            Navigator.pushNamed(context, '/pay');
+                          }
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: '请填写收货地址',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                          );
                         }
                       },
                     ),
