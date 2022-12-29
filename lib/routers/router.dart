@@ -32,7 +32,8 @@ final Map<String, Function> routes = {
       ProductContentPage(arguments: arguments),
   '/checkOut': (context) => CheckOutPage(),
   '/addressAdd': (context) => AddressAddPage(),
-  '/addressEdit': (context) => AddressEditPage(),
+  '/addressEdit': (context, {arguments}) =>
+      AddressEditPage(arguments: arguments),
   '/addressList': (context) => AddressListPage(),
 };
 

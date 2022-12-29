@@ -79,6 +79,7 @@ class _AddressAddPageState extends State<AddressAddPage> {
                         confirmWidget:
                             Text("确定", style: TextStyle(color: Colors.blue)));
 
+                    print(result);
                     if (result != null) {
                       setState(() {
                         this.area =
