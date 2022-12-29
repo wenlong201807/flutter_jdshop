@@ -9,6 +9,7 @@ import '../pages/Login.dart';
 import '../pages/RegisterFirst.dart';
 import '../pages/RegisterSecond.dart';
 import '../pages/RegisterThird.dart';
+import '../pages/CheckOut.dart';
 
 //配置路由
 final Map<String, Function> routes = {
@@ -25,6 +26,7 @@ final Map<String, Function> routes = {
       ProductListPage(arguments: arguments),
   '/productContent': (context, {arguments}) =>
       ProductContentPage(arguments: arguments),
+  '/checkOut': (context) => CheckOutPage(),
 };
 
 //固定写法

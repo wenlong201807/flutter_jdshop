@@ -20,6 +20,14 @@ class _CartPageState extends State<CartPage> {
     print("cart");
   }
 
+  //去结算
+
+  doCheckOut() {
+    //判断用户有没有登录    保存购物车选中的数据
+
+    Navigator.pushNamed(context, '/checkOut');
+  }
+
   @override
   Widget build(BuildContext context) {
     var cartProvider = Provider.of<Cart>(context);
@@ -96,11 +104,8 @@ class _CartPageState extends State<CartPage> {
                                 child: ElevatedButton(
                                   child: Text("结算",
                                       style: TextStyle(color: Colors.white)),
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.red)),
-                                  onPressed: () {},
+                                  // color: Colors.red,
+                                  onPressed: doCheckOut,
                                 ),
                               )
                             : Align(
