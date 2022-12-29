@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
-            initialRoute: '/login',
+            initialRoute: '/',
             onGenerateRoute: onGenerateRoute,
             theme: ThemeData(
               primaryColor: Colors.white,

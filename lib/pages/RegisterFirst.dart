@@ -14,7 +14,7 @@ class RegisterFirstPage extends StatefulWidget {
 }
 
 class _RegisterFirstPageState extends State<RegisterFirstPage> {
-  late String tel;
+  String tel = "";
   sendCode() async {
     RegExp reg = new RegExp(r"^1\d{10}$");
     if (reg.hasMatch(this.tel)) {
